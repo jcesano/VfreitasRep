@@ -4,6 +4,22 @@
 
 {% block title %}Post a reply{% endblock %}
 
+{% block content %}
+
+  <form method="post" class="mb-4" novalidate>
+    {% csrf_token %}
+    {% include 'includes/form.html' %}
+    <button type="submit" class="btn btn-success">Post a reply</button>
+  </form>
+
+  {% for post in topic.get_last_ten_posts %}  <!-- here! -->
+    <div class="card mb-2">
+      <!-- code suppressed -->
+    </div>
+  {% endfor %}
+
+{% endblock %}
+
 {% block stylesheet %}
   <link rel="stylesheet" href="{% static 'css/simplemde.min.css' %}">
 {% endblock %}
@@ -16,18 +32,3 @@
 {% endblock %} 
 
 
-<!-- {% block content %}
-
-  <form method="post" class="mb-4" novalidate>
-    {% csrf_token %}
-    {% include 'includes/form.html' %}
-    <button type="submit" class="btn btn-success">Post a reply</button>
-  </form>
-
-  {% for post in topic.get_last_ten_posts %}  <!-- here! -->
-    <!-- <div class="card mb-2"> -->
-      <!-- code suppressed -->
-    <!-- </div>
-  {% endfor %}
-
-{% endblock %}  -->

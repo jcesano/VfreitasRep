@@ -15,6 +15,7 @@ from django.views.generic import UpdateView
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils import timezone
+from django.urls import reverse
 
 # Create your views here.
 def home(request):
@@ -43,7 +44,8 @@ def board_topics(request, pk):
 @login_required
 def new_topic(request, pk):
     board = get_object_or_404(Board, pk=pk)
-    user = User.objects.first()  # TODO: get the currently logged in user
+    # TODO get the currently logged in user
+    user = request.user
     if request.method == 'POST':
         form = NewTopicForm(request.POST)
         if form.is_valid():
@@ -79,10 +81,17 @@ def reply_topic(request, pk, topic_pk):
             post.created_by = request.user
             post.save()
 
-            topic.last_updated = timezone.now()  
-            topic.save()                         
+            topic.last_updated = timezone.now()
+            topic.save()
 
-            return redirect('topic_posts', pk=pk, topic_pk=topic_pk)
+            topic_url = reverse('topic_posts', kwargs={'pk': pk, 'topic_pk': topic_pk})
+            topic_post_url = '{url}?page={page}#{id}'.format(
+                url=topic_url,
+                id=post.pk,
+                page=topic.get_page_count()
+            )
+
+            return redirect(topic_post_url)
     else:
         form = PostForm()
     return render(request, 'reply_topic.html', {'topic': topic, 'form': form})
